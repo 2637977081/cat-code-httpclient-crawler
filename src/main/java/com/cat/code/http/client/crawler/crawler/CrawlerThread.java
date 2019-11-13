@@ -1,5 +1,6 @@
 package com.cat.code.http.client.crawler.crawler;
 
+import com.cat.code.http.client.crawler.HttpUtil.HttpUtil;
 import com.cat.code.http.client.crawler.crawler.parser.PageParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -50,20 +51,28 @@ public class CrawlerThread implements Runnable {
                     //获取请求参数
                     Map<String,Object> params = crawlerMetaData.getParamMap();
                     HttpEntity<String> requestEntity = null;
-                    HttpMethod httpMethod = null;
                     //设置请求头
+                    HttpHeaders requestHeaders = new HttpHeaders();
                     if(crawlerMetaData.getHeaderMap()!=null){
-                        HttpHeaders requestHeaders = objectMapper.readValue(objectMapper.writeValueAsString(crawlerMetaData.getHeaderMap()),HttpHeaders.class);
-                        requestEntity = new HttpEntity<String>(null, requestHeaders);
+                        for(Map.Entry<String,String> entry:crawlerMetaData.getHeaderMap().entrySet()){
+                             requestHeaders.add(entry.getKey(),entry.getValue());
+                        }
                     }
+                    String body = null;
+                    if(crawlerMetaData.getParamMap()!=null){
+                        body = objectMapper.writeValueAsString(crawlerMetaData.getParamMap());
+                    }
+                    requestEntity = new HttpEntity<String>(body, requestHeaders);
                     ResponseEntity<String> response = null;
 
                      try {
                          //请求类别
                          if (crawlerMetaData.isPost()) {
-                             response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class, params);
+//                             response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class, params);
+                             response = restTemplate.postForEntity(url,requestEntity,String.class);
                          } else {
                              response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+//                             response = restTemplate.getForEntity(url,requestEntity, String.class);
                          }
                         }catch (Exception e){
                             Thread.sleep(2000);

@@ -29,30 +29,11 @@ public class HttpClientService {
 
     public void test(){
 
-        redisRunData.setTaskQueue("testHttpClient");
-        for(int i=1000;i<2000;i++){
-            String url = "https://www.dapp.review/api/dapp/dapp/1"+i+"?dapp=11649&lang=zh";
-            redisRunData.addUrl(url);
-        }
 
-        CrawlerMetaData crawlerMetaData =new CrawlerMetaData.Builder()
-                .setRunData(redisRunData)
-                .setHeaderMap(null)
-                .setIsPost(false)
-                .setPauseMillis(2000)
-                .setRestTemplate(restTemplate)
-                .setThreadCount(5)
-                .setPageParser(
-                        new PageParser() {
-                            @Override
-                            public void parse(String url, String body) {
-                                logger.info("response code:{},body:{}",url,body);
-                            }
-                        }
-                )
-                .build();
-        HttpCrawler httpCrawler = new HttpCrawler(crawlerMetaData);
-        httpCrawler.start(true);
+    }
+
+    public void test2(){
+
     }
 
 }
